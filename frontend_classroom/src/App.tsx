@@ -25,6 +25,9 @@ import { useNotificationProvider } from "./components/refine-ui/notification/use
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
+import Dashboard from "@/pages/dashboard.tsx";
+import { Home } from "lucide-react";
+
 
 function App() {
   return (
@@ -42,10 +45,29 @@ function App() {
                 warnWhenUnsavedChanges: true,
                 projectId: "hQkrHr-wrgHT1-wBPRPs",
               }}
+              // use resources entity routing from refineCore
+                resources= {[
+                    {
+                      name: "dashboard",
+                      list: '/',
+                      meta: {lable: 'Home', icon: <Home />}
+                    }
+                ]}
             >
               <Routes>
-                <Route index element={<WelcomePage />} />
+                  <Route element={
+                             <Layout>
+                                 <Outlet />
+                             </Layout>
+                         }>
+
+                      <Route path = "/" element ={<Dashboard/>}/>
+                  </Route>
+
               </Routes>
+
+
+
               <Toaster />
               <RefineKbar />
               <UnsavedChangesNotifier />
