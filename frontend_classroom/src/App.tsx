@@ -26,13 +26,14 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
 import Dashboard from "@/pages/dashboard.tsx";
-import { Home } from "lucide-react";
+import {BookOpen, Home} from "lucide-react";
+import SubjectList from "@/pages/subjects/list.tsx";
+import SubjectsCreate from "@/pages/subjects/create.tsx";
 
 
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ThemeProvider>
           <DevtoolsProvider>
@@ -48,21 +49,36 @@ function App() {
               // use resources entity routing from refineCore
                 resources= {[
                     {
-                      name: "dashboard",
+                      name: 'dashboard',
                       list: '/',
-                      meta: {lable: 'Home', icon: <Home />}
+                      meta: {label: 'Home', icon: <Home />}
+                    },
+                    {
+                      name: 'subjects',
+                      list: '/subjects',
+                      create: '/subjects/create',
+                      meta: {label: 'Subjects', icon: <BookOpen/>}
                     }
                 ]}
             >
               <Routes>
-                  <Route element={
-                             <Layout>
-                                 <Outlet />
-                             </Layout>
-                         }>
-
-                      <Route path = "/" element ={<Dashboard/>}/>
+                  {/*Sidebar*/}
+                  <Route
+                      element={
+                          <Layout>
+                              <Outlet />
+                          </Layout>
+                      }
+                  >
+                      {/*Home*/}
+                      <Route path="/" element={<Dashboard />} />
+                      {/*Subjects*/}
+                      <Route path="subjects">
+                          <Route index element={<SubjectList />} />
+                          <Route path="create" element={<SubjectsCreate />} />
+                      </Route>
                   </Route>
+
 
               </Routes>
 
