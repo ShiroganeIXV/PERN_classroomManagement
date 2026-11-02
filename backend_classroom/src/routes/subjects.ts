@@ -12,7 +12,7 @@ router.get("/", async (req,res) => {
         const currentPage = Math.max(1,+page)
         const limitPerPage = Math.max(1, +limit)
 
-        const offset = (currentPage - 1) * limitPage
+        const offset = (currentPage - 1) * limitPerPage
 
         const filterConditions: (SQL | undefined)[] = [];
 
@@ -39,23 +39,36 @@ router.get("/", async (req,res) => {
         const countResult = await db
             .select({count: sql<number>`count(*)`})
             .from(subjects)
-            .leftJoin(departments, eq(subjects.description, departments.id))
+            .leftJoin(departments, eq(subjects.departmentId, departments.id))
             .where(whereClause);
 
         const totalCount = countResult[0]?.count ?? 0;
 
-        const subjectList = await db.select({
-            ...getTableColumns(subjects),
-            department:{...getTableColumns(departments)}
-        }).from(subjects)
+        const subjectList = await db
+            .select({
+                ...getTableColumns(subjects),
+                department:{...getTableColumns(departments)}
+            })
+            .from(subjects)
             .leftJoin(departments, eq(subjects.departmentId, departments.id))
             .where(whereClause)
             .orderBy(desc(subjects.createdAt))
             .limit(limitPerPage)
-        })
+            .offset(offset);
+
+        res.status(200).json({
+            data: subjectList,
+            pagination: {
+                page: currentPage,
+                limit: limitPerPage,
+                total: totalCount,
+                totalPages: Math.ceil(totalCount/limitPerPage)
+            }
+        });
 
     }catch (e) {
-        console.error(`Get subjects error: ${e}`);
+        console.error(`Get /subjects error: ${e}`);
         res.status(500).json("Failed to get subjects");
     }
 })
+export default router;
