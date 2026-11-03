@@ -1,41 +1,110 @@
-import { Subject } from "@/types";
+import { GraduationCap, School } from "lucide-react";
 
-export const DEPARTMENTS = [
-    'CS',
-    'Math',
-    'Physics'
+export const USER_ROLES = {
+    STUDENT: "student",
+    TEACHER: "teacher",
+    ADMIN: "admin",
+};
+
+export const ROLE_OPTIONS = [
+    {
+        value: USER_ROLES.STUDENT,
+        label: "Student",
+        icon: GraduationCap,
+    },
+    {
+        value: USER_ROLES.TEACHER,
+        label: "Teacher",
+        icon: School,
+    },
 ];
 
-export const DEPARTMENT_OPTIONS = DEPARTMENTS.map(dept => ({
+export const DEPARTMENTS = [
+    "Computer Science",
+    "Mathematics",
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "English",
+    "History",
+    "Geography",
+    "Economics",
+    "Business Administration",
+    "Engineering",
+    "Psychology",
+    "Sociology",
+    "Political Science",
+    "Philosophy",
+    "Education",
+    "Fine Arts",
+    "Music",
+    "Physical Education",
+    "Law",
+] as const;
+
+export const DEPARTMENT_OPTIONS = DEPARTMENTS.map((dept) => ({
     value: dept,
-    label: dept
+    label: dept,
 }));
 
-export const MOCK_SUBJECTS: Subject[] = [
+export const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+export const ALLOWED_TYPES = [
+    "image/png",
+    "image/jpeg",
+    "image/jpg",
+    "image/webp",
+];
+
+const getEnvVar = (key: string, defaultValue: string = ""): string => {
+    return import.meta.env[key] ?? defaultValue;
+};
+
+export const CLOUDINARY_UPLOAD_URL = getEnvVar("VITE_CLOUDINARY_UPLOAD_URL");
+export const CLOUDINARY_CLOUD_NAME = getEnvVar("VITE_CLOUDINARY_CLOUD_NAME");
+export const BACKEND_BASE_URL = getEnvVar("VITE_BACKEND_BASE_URL", import.meta.env.VITE_BACKEN_BASE_URL ?? "http://localhost:8000/api");
+
+export const BASE_URL =  import.meta.env.VITE_API_URL;
+export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY
+export const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY
+
+export const REFRESH_TOKEN_URL = `${BASE_URL}/refresh-token`;
+
+export const CLOUDINARY_UPLOAD_PRESET = getEnvVar("VITE_CLOUDINARY_UPLOAD_PRESET");
+
+export const teachers = [
+    {
+        id: "1",
+        name: "John Doe",
+    },
+    {
+        id: "2",
+        name: "Jane Smith",
+    },
+    {
+        id: "3",
+        name: "Dr. Alan Turing",
+    },
+];
+
+export const subjects = [
     {
         id: 1,
-        code: 'CS101',
-        name: 'Introduction to Computer Science',
-        department: 'CS',
-        description: 'An introductory course covering fundamental programming concepts, algorithms, and computational problem-solving.',
-        createdAt: '2024-01-15T08:00:00.000Z'
+        name: "Mathematics",
+        code: "MATH",
     },
     {
         id: 2,
-        code: 'MATH201',
-        name: 'Linear Algebra',
-        department: 'Math',
-        description: 'A comprehensive study of vector spaces, linear transformations, matrices, determinants, and systems of linear equations.',
-        createdAt: '2024-01-15T09:00:00.000Z'
+        name: "Computer Science",
+        code: "CS",
     },
     {
         id: 3,
-        code: 'PHYS101',
-        name: 'Classical Mechanics',
-        department: 'Physics',
-        description: 'A foundational physics course exploring Newtonian mechanics, motion, energy, momentum, and rotational dynamics.',
-        createdAt: '2024-01-15T10:00:00.000Z'
-    }
+        name: "Physics",
+        code: "PHY",
+    },
+    {
+        id: 4,
+        name: "Chemistry",
+        code: "CHEM",
+    },
 ];
-
-export const mockSubjects = MOCK_SUBJECTS;
