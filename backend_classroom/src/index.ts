@@ -13,7 +13,7 @@ import {toNodeHandler} from "better-auth/node";
 
 const app = express();
 
-const PORT = Number(process.env.PORT ?? 8000);
+const PORT = Number(process.env.PORT ?? 8080);
 // CORS
 if (!process.env.FRONTEND_URL){
   throw new Error('FRONTEND_URL environment variable is not set');
