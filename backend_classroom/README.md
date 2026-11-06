@@ -104,6 +104,8 @@ BETTER_AUTH_SECRET=
 
 Replace the placeholder values with your real credentials. You can get these by signing up at: [**Arcjet**](https://jsm.dev/pern-arcjet), [**Neon**](https://neon.com/), [**Better-Auth**](https://www.better-auth.com/).
 
+For the deployed backend, set Railway's `FRONTEND_URL` to the frontend origin without a trailing slash, for example `https://pernclassroommanagement-frontend.vercel.app`. If this value is changed, save the Railway variable and redeploy or restart the backend so both CORS and Better Auth use the updated origin.
+
 **Running the Project**
 
 ```bash
