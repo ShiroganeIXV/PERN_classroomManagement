@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { once } from "node:events";
 import net from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
@@ -7,6 +7,26 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 const entryPoint = fileURLToPath(new URL("../dist/index.js", import.meta.url));
+
+function inspectArcjetClient(environment) {
+  const arcjetModule = new URL("../dist/config/arcjet.js", import.meta.url).href;
+  const script = `const { default: aj } = await import(${JSON.stringify(arcjetModule)}); const details = aj.clientIpDetails({ headers: {}, method: "GET", url: "/", socket: { remoteAddress: "127.0.0.1" } }); console.log("RESULT " + JSON.stringify({ NODE_ENV: process.env.NODE_ENV, ARCJET_ENV: process.env.ARCJET_ENV, MODE: process.env.MODE, testModeBypass: process.env.NODE_ENV === "test", ip: details.ip, provenance: details.provenance }));`;
+  const result = spawnSync(process.execPath, ["--input-type=module", "-e", script], {
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      ARCJET_KEY: "ajkey_test_placeholder",
+      ...environment,
+    },
+  });
+
+  const output = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.status, 0, output);
+  const resultLine = output.split(/\r?\n/).find((line) => line.startsWith("RESULT "));
+  assert.ok(resultLine, `Arcjet inspection did not return a result:\n${output}`);
+
+  return { state: JSON.parse(resultLine.slice("RESULT ".length)), output };
+}
 
 async function getAvailablePort() {
   const server = net.createServer();
@@ -30,6 +50,8 @@ test("compiled backend starts and serves requests on PORT", async (context) => {
       FRONTEND_URL: "http://localhost:3000",
       NODE_ENV: "test",
       PORT: String(port),
+      RAILWAY_ENVIRONMENT: "",
+      RAILWAY_PROJECT_ID: "",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -99,4 +121,53 @@ test("Better Auth base URL resolution prefers explicit and Railway URLs", async 
       else process.env[key] = value;
     }
   }
+});
+
+test("Railway runtime forces production mode before Arcjet initializes", () => {
+  const { state, output } = inspectArcjetClient({
+    ARCJET_ENV: "development",
+    MODE: "development",
+    NODE_ENV: "test",
+    RAILWAY_ENVIRONMENT: "production",
+    RAILWAY_PROJECT_ID: "test-project",
+  });
+
+  assert.deepEqual({
+    NODE_ENV: state.NODE_ENV,
+    ARCJET_ENV: state.ARCJET_ENV,
+    MODE: state.MODE,
+    testModeBypass: state.testModeBypass,
+  }, {
+    NODE_ENV: "production",
+    ARCJET_ENV: "production",
+    MODE: "production",
+    testModeBypass: false,
+  });
+  assert.notEqual(state.ip, "127.0.0.1");
+  assert.notEqual(state.provenance, "development");
+  assert.doesNotMatch(output, /Arcjet will use 127\.0\.0\.1/);
+});
+
+test("local development mode is preserved", () => {
+  const { state, output } = inspectArcjetClient({
+    ARCJET_ENV: "development",
+    MODE: "development",
+    NODE_ENV: "development",
+    RAILWAY_ENVIRONMENT: "",
+    RAILWAY_PROJECT_ID: "",
+  });
+
+  assert.deepEqual({
+    NODE_ENV: state.NODE_ENV,
+    ARCJET_ENV: state.ARCJET_ENV,
+    MODE: state.MODE,
+    testModeBypass: state.testModeBypass,
+  }, {
+    NODE_ENV: "development",
+    ARCJET_ENV: "development",
+    MODE: "development",
+    testModeBypass: false,
+  });
+  assert.equal(state.ip, "127.0.0.1");
+  assert.match(output, /Arcjet will use 127\.0\.0\.1/);
 });

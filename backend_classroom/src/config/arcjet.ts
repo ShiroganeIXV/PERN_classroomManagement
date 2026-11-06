@@ -1,3 +1,4 @@
+import "./environment.js";
 import arcjet , {shield, detectBot, slidingWindow} from "@arcjet/node";
 
 if (!process.env.ARCJET_KEY && process.env.NODE_ENV === 'test'){

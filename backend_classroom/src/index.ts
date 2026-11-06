@@ -1,9 +1,9 @@
 // site monitor
+import "./config/environment.js";
 import AgentAPI from "apminsight";
 AgentAPI.config()
 
 
-import "dotenv/config";
 import express from "express";
 import subjectRouter from "./routes/subjects.js";
 import cors from 'cors';
