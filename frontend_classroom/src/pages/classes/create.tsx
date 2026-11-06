@@ -1,7 +1,7 @@
 import {CreateView} from "@/components/refine-ui/views/create-view.tsx";
 import {Breadcrumb} from "@/components/refine-ui/layout/breadcrumb.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {useBack} from "@refinedev/core";
+import {useBack, useList} from "@refinedev/core";
 import {Separator} from "@/components/ui/separator.tsx";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,7 +25,7 @@ import {Textarea} from "@/components/ui/textarea.tsx";
 import {Loader2} from "lucide-react";
 import UploadWidget from "@/components/upload-widget.tsx";
 import {useState} from "react";
-import {UploadWidgetValue} from "@/types";
+import {Subject, UploadWidgetValue, User} from "@/types";
 
 
 const Create = () => {
@@ -40,6 +40,7 @@ const Create = () => {
     });
 
     const {
+        refineCore: {onFinish},
         handleSubmit,
         formState: { isSubmitting, errors },
         control,
@@ -47,39 +48,40 @@ const Create = () => {
 
     const onSubmit = async (values: z.infer<typeof classSchema>) => {
         try {
-            console.log(values);
+            await onFinish(values);
         } catch (error) {
             console.error("Error creating class:", error);
         }
     };
 
-    const teachers = [
-        {
-            id: 1,
-            name: "John Doe",
+    // fetch data from backend
+    const {query: subjectQuery} = useList<Subject>({
+        resource: "subjects",
+        pagination: {
+            pageSize: 10,
         },
-        {
-            id: 2,
-            name: "Jane Doe",
-        },
-    ];
+    })
 
-    const subjects = [
-        {
-            id: 1,
-            name: "Math",
-            code: "MATH",
+    const {query: teacherQuery} = useList<User>({
+        resource: "users",
+        filters: [
+            { field: "role", operator: "eq", value: "teacher" },
+        ],
+        pagination: {
+            pageSize: 10,
         },
-        {
-            id: 2,
-            name: "English",
-            code: "ENG",
-        },
-    ];
+    })
+
+    const subjects = subjectQuery?.data?.data || [];
+    const subjectsLoading = subjectQuery?.isLoading;
+
+    const teachers = teacherQuery?.data?.data || [];
+    const teachersLoading = teacherQuery?.isLoading;
+
 
     const bannerPublicId = form.watch('bannerCldPubId');
 
-    const setBannerImage = (file,field) => {
+    const setBannerImage = (file: UploadWidgetValue | null, field: { onChange: (value: string) => void }) => {
         if (file){
             field.onChange(file.url);
             form.setValue('bannerCldPubId',file.publicId,{
@@ -132,7 +134,7 @@ const Create = () => {
                                                 <FormControl>
                                                     <UploadWidget
                                                         value = {field.value ? {url: field.value, publicId: bannerPublicId ?? ''}:null }
-                                                        onChange={(file :any)=>setBannerImage(file,field)}
+                                                        onChange={(file)=>setBannerImage(file,field)}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -181,6 +183,7 @@ const Create = () => {
                                                         field.onChange(Number(value))
                                                     }
                                                     value={field.value?.toString()}
+                                                    disabled={subjectsLoading}
                                                 >
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
@@ -214,6 +217,7 @@ const Create = () => {
                                                 <Select
                                                     onValueChange={field.onChange}
                                                     value={field.value}
+                                                    disabled={teachersLoading}
                                                 >
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">

@@ -35,6 +35,13 @@ Refine's hooks and components simplifies the development process and eliminates 
     npm run start
 ```
 
+## Deploying to Vercel
+
+For this repository, set the Vercel project root directory to `frontend_classroom`.
+Use `npm run build` as the build command and `dist` as the output directory.
+
+Add `VITE_BACKEND_BASE_URL` to the Vercel project's environment variables and set it to the deployed backend API URL (for example, `https://api.example.com/api`).
+
 ## Learn More
 
 To learn more about **Refine**, please check out the [Documentation](https://refine.dev/docs)
