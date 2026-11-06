@@ -8,12 +8,12 @@ import express from "express";
 import subjectRouter from "./routes/subjects.js";
 import cors from 'cors';
 import securityMiddleware from "./middleware/security.js";
-import {auth} from "./lib/auth";
+import {auth} from "./lib/auth.js";
 import {toNodeHandler} from "better-auth/node";
 
 const app = express();
 
-const PORT = 8000;
+const PORT = Number(process.env.PORT ?? 8000);
 // CORS
 if (!process.env.FRONTEND_URL){
   throw new Error('FRONTEND_URL environment variable is not set');
