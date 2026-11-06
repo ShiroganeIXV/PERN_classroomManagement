@@ -1,3 +1,8 @@
+// site monitor
+import AgentAPI from "apminsight";
+AgentAPI.config()
+
+
 import "dotenv/config";
 import express from "express";
 import subjectRouter from "./routes/subjects";
