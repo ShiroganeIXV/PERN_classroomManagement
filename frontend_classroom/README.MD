@@ -42,6 +42,12 @@ Use `npm run build` as the build command and `dist` as the output directory.
 
 Add `VITE_BACKEND_BASE_URL` to the Vercel project's environment variables and set it to the deployed backend API URL (for example, `https://api.example.com/api`).
 
+Email signup supports Student and Teacher roles. Enter a full name, email, and a password of at least 8 characters. Signup signs you in automatically; after signing out, use the same email and password to sign in again.
+
+Authentication uses `/api/auth` on the frontend domain to keep session cookies working across hosting providers. Vite proxies that path to `VITE_BACKEND_BASE_URL` during development. Vercel uses the auth rewrite in `vercel.json`; update that destination if you move the backend. Redeploy both applications to apply the signup and proxy changes.
+
+Set the backend's `FRONTEND_URL` to the exact frontend origin, including `https://` for Vercel. For local development, use `http://localhost:5173` and set the frontend's `VITE_BACKEND_BASE_URL` to `http://localhost:8000/api`, then restart both servers.
+
 ## Learn More
 
 To learn more about **Refine**, please check out the [Documentation](https://refine.dev/docs)

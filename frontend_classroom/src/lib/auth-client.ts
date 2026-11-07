@@ -1,19 +1,16 @@
 import { createAuthClient } from "better-auth/react";
-import { BACKEND_BASE_URL, USER_ROLES } from "@/constants";
+import { inferAdditionalFields } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-    baseURL: `${BACKEND_BASE_URL}auth`,
-    user: {
-        additionalFields: {
+    // Keep auth cookies on the frontend domain through the Vite/Vercel proxy.
+    baseURL: `${window.location.origin}/api/auth`,
+    fetchOptions: { credentials: "include" },
+    plugins: [inferAdditionalFields({
+        user: {
             role: {
-                type: USER_ROLES,
+                type: "string",
                 required: true,
                 defaultValue: "student",
-                input: true,
-            },
-            department: {
-                type: "string",
-                required: false,
                 input: true,
             },
             imageCldPubId: {
@@ -22,5 +19,5 @@ export const authClient = createAuthClient({
                 input: true,
             },
         },
-    },
+    })],
 });

@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { authOptions } from "./auth-options.js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { db } from "../db/index.js"; // your drizzle instance
@@ -12,22 +13,5 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        required: true,
-        defaultValue: "student",
-        input: true, // Allow role to be set during registration
-      },
-      imageCldPubId: {
-        type: "string",
-        required: false,
-        input: true, // Allow imageCldPubId to be set during registration
-      },
-    },
-  },
+  ...authOptions,
 });

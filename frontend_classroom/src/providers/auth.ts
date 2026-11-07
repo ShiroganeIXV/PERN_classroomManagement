@@ -19,7 +19,7 @@ export const authProvider: AuthProvider = {
                 image,
                 role,
                 imageCldPubId,
-            } as SignUpPayload);
+            });
 
             if (error) {
                 return {
@@ -50,11 +50,12 @@ export const authProvider: AuthProvider = {
             };
         }
     },
-    login: async ({ email, password }) => {
+    login: async ({ email, password, rememberMe }) => {
         try {
             const { data, error } = await authClient.signIn.email({
-                email: email,
+                email: email.trim(),
                 password: password,
+                rememberMe,
             });
 
             if (error) {
@@ -117,14 +118,22 @@ export const authProvider: AuthProvider = {
         return { error };
     },
     check: async () => {
-        const user = localStorage.getItem("user");
-
-        if (user) {
+        try {
+            const { data, error } = await authClient.getSession({
+                query: { disableCookieCache: true },
+            });
+            if (!error && data?.user) {
+                localStorage.setItem("user", JSON.stringify(data.user));
+                return { authenticated: true };
+            }
+        } catch {
             return {
-                authenticated: true,
+                authenticated: false,
+                error: { name: "Connection error", message: "Unable to verify your session. Please try again." },
             };
         }
 
+        localStorage.removeItem("user");
         return {
             authenticated: false,
             logout: true,
