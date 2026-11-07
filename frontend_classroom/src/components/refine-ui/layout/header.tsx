@@ -11,6 +11,7 @@ import {
 import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/refine-ui/theme/theme-toggle";
 import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
+import { Button } from "@/components/ui/button";
 import { useSidebar, SidebarTrigger } from "@/components/ui/sidebar";
 import { LogOutIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ function DesktopHeader() {
         "z-40"
       )}
     >
+      <LogoutButton />
       <ThemeToggle />
       <UserDropdown />
     </header>
@@ -112,8 +114,34 @@ function MobileHeader() {
         </h2>
       </div>
 
-      <ThemeToggle className={cn("h-8", "w-8")} />
+      <div className="flex shrink-0 items-center gap-2">
+        <LogoutButton className="h-8" />
+        <ThemeToggle className={cn("h-8", "w-8")} />
+      </div>
     </header>
+  );
+}
+
+function LogoutButton({ className }: { className?: string }) {
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const authProvider = useActiveAuthProvider();
+
+  if (!authProvider) {
+    return null;
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      className={cn("border-sidebar-border bg-transparent", className)}
+      onClick={() => logout()}
+      disabled={isLoggingOut}
+      aria-busy={isLoggingOut}
+    >
+      <LogOutIcon aria-hidden="true" />
+      {isLoggingOut ? "Logging out..." : "Logout"}
+    </Button>
   );
 }
 
