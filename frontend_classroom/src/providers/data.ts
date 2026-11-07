@@ -1,6 +1,6 @@
 import {createDataProvider, CreateDataProviderOptions} from "@refinedev/rest";
 import {BACKEND_BASE_URL} from "@/constants";
-import {CreateResponse, ListResponse} from "@/types";
+import {CreateResponse, GetOneResponse, ListResponse} from "@/types";
 
 if (!BACKEND_BASE_URL){
   throw new Error('BACKEND_BASE_URL is not defined');
@@ -44,6 +44,10 @@ const options: CreateDataProviderOptions = {
           if (field === 'department') params.department = value;
           if (field === 'name' || field === 'code') params.search = value;
         }
+
+        if (/^classes\/[^/]+\/users$/.test(resource) && field === 'role') {
+          params.role = value;
+        }
       })
       return params;
 
@@ -61,6 +65,15 @@ const options: CreateDataProviderOptions = {
 
       const payload: ListResponse = await response.clone().json();
       return payload.pagination?.total ?? payload.data?.length ?? 0;
+    },
+  },
+
+  getOne: {
+    mapResponse: async (response) => {
+      if (!response.ok) throw await buildHttpError(response);
+
+      const payload: GetOneResponse = await response.json();
+      return payload.data;
     },
   },
 
