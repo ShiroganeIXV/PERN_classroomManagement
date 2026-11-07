@@ -55,56 +55,15 @@ export const ALLOWED_TYPES = [
     "image/webp",
 ];
 
-const getEnvVar = (key: string, defaultValue: string = ""): string => {
-    return import.meta.env[key] ?? defaultValue;
-};
+export const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
+export const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+export const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
-export const CLOUDINARY_UPLOAD_URL = getEnvVar("VITE_CLOUDINARY_UPLOAD_URL");
-export const CLOUDINARY_CLOUD_NAME = getEnvVar("VITE_CLOUDINARY_CLOUD_NAME");
-export const BACKEND_BASE_URL = getEnvVar("VITE_BACKEND_BASE_URL", import.meta.env.VITE_BACKEN_BASE_URL ?? "http://localhost:8000/api");
-
-export const BASE_URL =  import.meta.env.VITE_API_URL;
-export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY
-export const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY
+export const BASE_URL = import.meta.env.VITE_API_URL;
+export const ACCESS_TOKEN_KEY = import.meta.env.VITE_ACCESS_TOKEN_KEY;
+export const REFRESH_TOKEN_KEY = import.meta.env.VITE_REFRESH_TOKEN_KEY;
 
 export const REFRESH_TOKEN_URL = `${BASE_URL}/refresh-token`;
 
-export const CLOUDINARY_UPLOAD_PRESET = getEnvVar("VITE_CLOUDINARY_UPLOAD_PRESET");
-
-export const teachers = [
-    {
-        id: "1",
-        name: "John Doe",
-    },
-    {
-        id: "2",
-        name: "Jane Smith",
-    },
-    {
-        id: "3",
-        name: "Dr. Alan Turing",
-    },
-];
-
-export const subjects = [
-    {
-        id: 1,
-        name: "Mathematics",
-        code: "MATH",
-    },
-    {
-        id: 2,
-        name: "Computer Science",
-        code: "CS",
-    },
-    {
-        id: 3,
-        name: "Physics",
-        code: "PHY",
-    },
-    {
-        id: 4,
-        name: "Chemistry",
-        code: "CHEM",
-    },
-];
+export const CLOUDINARY_UPLOAD_PRESET = import.meta.env
+    .VITE_CLOUDINARY_UPLOAD_PRESET;
