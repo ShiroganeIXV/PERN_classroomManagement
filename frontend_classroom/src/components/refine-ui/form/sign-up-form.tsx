@@ -92,9 +92,6 @@ export const SignUpForm = () => {
 
   return (
       <div className="sign-up">
-        <div className="logo">
-          <img src="/logo.png" alt="Logo" />
-        </div>
 
         <Card className="card">
           <CardHeader className="header">
